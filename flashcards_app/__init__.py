@@ -2,16 +2,23 @@ from flask import Flask, render_template, request, url_for, redirect, session, f
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 
-
-
-#db = SQLAlchemy()
+db = SQLAlchemy()
 
 def create_app():
 
     app = Flask(__name__)
     app.secret_key = 'secret-key'
     app.permanent_session_lifetime= timedelta(days=1)
-    #db.init_app(app)
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite2"
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+
+    from . import models
+
+    with app.app_context():
+        db.create_all()
 
 
     @app.route('/')
