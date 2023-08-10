@@ -43,13 +43,9 @@ def create_app():
         else:
             return render_template("login.html", active=["login", session['connected']])
     
-    @app.route('/user')
+    @app.route('/user', methods=["POST", "GET"])
     def user():
-        if "email" in session:
-            email = session['email']
-            return f"<h1>{email}</h1>"
-        else : 
-            return redirect(url_for("login"))
+        return render_template('user.html', active=["user", session['connected']])
         
     @app.route("/logout")
     def logout():

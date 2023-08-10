@@ -40,8 +40,8 @@
 	<div class="navbar">
 		<a class="{% if active[0] == 'homepage' %}active{% endif %}" href="/">Homepage</a>
 		{% if active[1]==False %}<a class="{% if active[0] == 'login' %}active{% endif %}" href="/login">Login</a>{% endif %}
+                {% if active[1]==True %}<a class="{% if active[0] == 'user' %}active{% endif %}" href="/user">user</a>{% endif %}
                 {% if active[1]==True %}<a href="/logout">Logout</a>{% endif %}
-		        
 
 	</div>
 	
