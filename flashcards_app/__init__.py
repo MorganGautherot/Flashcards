@@ -10,7 +10,7 @@ def create_app():
     app.secret_key = 'secret-key'
     app.permanent_session_lifetime= timedelta(days=1)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite2"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
@@ -30,34 +30,66 @@ def create_app():
             session['connected'] = False
 
         return render_template('index.html', active=["homepage", session['connected']])
+    
 
+    @app.route('/create_account', methods=['POST', 'GET'])
+    def create_account():
+
+        if request.method == "POST":
+
+            found_user = models.users.query.filter_by(email=request.form['email']).first()
+
+            if  found_user:
+            
+                flash('You already have an account !', 'info')
+                flash('Please use the login page !', 'info')
+                return redirect(url_for('create_account'))
+            
+            else :
+                usr = models.users(email=request.form['email'],
+                                   last_lesson=request.form['last_lesson'])
+
+                db.session.add(usr)
+                db.session.flush()
+                db.session.commit()
+
+                flash('Your account has been created, please log on now !', 'info')
+
+                return redirect(url_for('home'))
+        else :     
+
+            return render_template("create_account.html", active=["create_account", session['connected']])
 
     @app.route("/login", methods=['POST', 'GET'])
     def login():
         if request.method == "POST":
 
-            email=request.form['email']
-            session['email'] = email
+            found_user = models.users.query.filter_by(email=request.form['email']).first()
 
-            password=request.form['password']
-            session['password']= password
+            if found_user:
+                session['email'] = request.form['email']
 
-            session.permanent = True
+                session.permanent = True
 
-            flash('You have been logged in!', 'info')
+                flash('You have been logged in!', 'info')
 
-            return redirect(url_for('home'))
+                return redirect(url_for('home'))
+            else :
+                flash("You don't have an account, please create one know !", 'info')
+
+                return redirect(url_for('login'))
+
         else:
             return render_template("login.html", active=["login", session['connected']])
     
     @app.route('/user', methods=["POST", "GET"])
     def user():
+        
         return render_template('user.html', active=["user", session['connected']])
         
     @app.route("/logout")
     def logout():
         session.pop('email', None)
-        session.pop('password', None)
         session['connected'] = False
         flash('You have been logged out!', 'info')
         return redirect(url_for("home"))
