@@ -68,6 +68,7 @@ def create_app():
 
             if found_user:
                 session['email'] = request.form['email']
+                session['last_lesson'] = found_user.last_lesson
 
                 session.permanent = True
 
@@ -82,10 +83,10 @@ def create_app():
         else:
             return render_template("login.html", active=["login", session['connected']])
     
-    @app.route('/user', methods=["POST", "GET"])
+    @app.route('/user')
     def user():
         
-        return render_template('user.html', active=["user", session['connected']])
+        return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
         
     @app.route("/logout")
     def logout():
