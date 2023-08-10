@@ -31,6 +31,10 @@ def create_app():
 
         return render_template('index.html', active=["homepage", session['connected']])
     
+    @app.route('/flash_cards')
+    def flash_cards():
+        return render_template('flash_cards.html', active=["flash_cards", session['connected']])
+    
 
     @app.route('/create_account', methods=['POST', 'GET'])
     def create_account():

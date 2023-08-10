@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Flash cards{% endblock %}
+{% block content %}
+
+
+<style>
+    .title {
+    border: solid 5px black;
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    }
+    
+    .term {
+    border: solid 5px black;
+    border-radius: 15px;
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    width: 45%;
+    margin:auto;
+    margin-top: 100px;
+    }
+    
+    .definition {
+    border: solid 5px black;
+    border-radius: 15px;
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    width: 45%;
+    margin:auto;
+    margin-top: 100px;
+    display: None;
+    }
+    
+    .button {
+    text-align: center;
+    border-radius: 15px;
+    margin:auto;
+    margin-top: 100px;
+    }
+    
+    button {
+    color: white;
+    border-radius: 10px;
+    background-color: rgb(49, 128, 49);
+    padding: 5px
+    }
+    
+    button:hover {
+    transform: scale(1.1);
+    }
+    
+    </style>
+    
+    <h1 class="title">Flashcards </h1>
+    
+    <div class="button">
+    <button class="next"> Question au hasard</button>
+    <button class="check"> Réponse</button>
+    </div>
+    
+    <div>
+    <h3 class="term">Term</h3>
+    </div>
+    
+    <div>
+    <h3 class="definition">Definition</h3>
+    </div>
+    
+    <script>
+    
+    const term = document.querySelector(".term");
+    const definition = document.querySelector(".definition")
+    const checkButton = document.querySelector(".check");
+    const nextButton = document.querySelector(".next");
+    
+    let words = {
+    "Trouver la version python utilsée (bash)": "which python et ensuite ls -lh /usr/bin/python* ",
+    "Quel commande permet de lister les process en cours ?": "htop",
+    "Une fois dans htop, quelle touche utiliser pour terminer un programme ?": "K",
+    "Après avoir fait un CTRL + Z, comment reprendre l'exécution d'un programme ? ": "fg",
+    "Trouver la version python utilisée (python)": "print(sys.version)",
+    "Executer un fichier dans le dossier courant": "./fichier.sh",
+    "Quel raccourci permet de mettre en pause une exécution": "CTRL + Z",
+    "Comment s'appelle la variable qui liste que Linux repertorie pour lancer des programmes ?": "PATH",
+    "Print la variable d'environnement HOME avec Python": "print(os.environ['HOME'])",
+    "Créer une variable d'environnement ?": "export VAR=variable",
+    "Quel est le 'problème' de la commande export ?": "les variables crées ne survivent pas entre les sessions",
+    ".bashrc customise-t'il les profils de tous les utilisateurs ?": "Non, il y a un .bashrc dans le dossier personnel de chaque utilisateur (chacun sa config)",
+    "A quoi peut servir le bashrc ?": "Customiser son terminal, créer des alias et des fonctions toujours disponibles",
+    "Donnez des exemples de startup files ?": "bashrc, profile, bash_profile, bash_login",
+    "Quel raccourci permet de terminer un process ?": "CTRL + C",
+    "Afficher une variable d'environnement ?": "echo $VAR ou printenv VAR",
+    "Comment ajouter le résultat d'une commande bash à une string?": "echo $(commande)",
+    }
+    
+    let data = Object.entries(words)
+    
+    function getRandomTerm() {
+    randomTerm = data[Math.floor(Math.random() * data.length)][0]
+    term.innerHTML = `<h3>${randomTerm} </h3>`
+    }
+    
+    checkButton.addEventListener("click", function() {
+    definition.style.display = "block";
+    definition.innerHTML = `<h3>${words[randomTerm]}</h3>`
+    }
+    )
+    
+    nextButton.addEventListener("click", function() {
+    definition.style.display = "None";
+    getRandomTerm()
+    }
+    )
+    
+    </script>
+{% endblock %}
