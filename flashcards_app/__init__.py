@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session
 from flask_sqlalchemy import SQLAlchemy
+from datetime import timedelta
 
 
 
@@ -8,7 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 def create_app():
 
     app = Flask(__name__)
-    app.secret_key = 'super secret key'
+    app.secret_key = 'secret-key'
+    app.permanent_session_lifetime= timedelta(days=1)
     #db.init_app(app)
 
 
