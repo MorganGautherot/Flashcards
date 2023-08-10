@@ -83,10 +83,28 @@ def create_app():
         else:
             return render_template("login.html", active=["login", session['connected']])
     
-    @app.route('/user')
+    @app.route('/user', methods=['POST', 'GET'])
     def user():
-        
-        return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
+
+        if request.method == "POST":
+
+            found_user = models.users.query.filter_by(email=session['email']).first()
+
+            found_user.email = request.form['email']
+            found_user.last_email = request.form['last_lesson']
+
+            db.session.commit()
+            flash("Changes confirm !", 'info')
+
+            session['email'] = request.form['email']
+            session['last_lesson'] = request.form['last_lesson']
+
+            return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
+
+
+        else : 
+
+            return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
         
     @app.route("/logout")
     def logout():
