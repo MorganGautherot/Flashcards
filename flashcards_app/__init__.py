@@ -107,6 +107,9 @@ def create_app():
 
 
         else : 
+            found_user = models.users.query.filter_by(email=session['email']).first()
+            session['email'] = found_user.email
+            session['last_lesson'] = found_user.last_lesson
 
             return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
         

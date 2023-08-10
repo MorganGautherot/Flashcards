@@ -7,8 +7,10 @@ class users(db.Model):
     last_lesson = db.Column("last_lesson", db.Integer)
     email = db.Column('email', db.String(100))
     
-    def __init__(self, email, last_lesson=1):
-         
-        self.last_lesson=last_lesson
+    def __init__(self, email, last_lesson):
+        if last_lesson=='':
+            self.last_lesson = 1
+        else :
+            self.last_lesson=last_lesson
         self.email=email
         self.date_created=datetime.utcnow()
