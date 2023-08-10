@@ -28,11 +28,15 @@ def create_app():
     @app.route("/login", methods=['POST', 'GET'])
     def login():
         if request.method == "POST":
+            
             email=request.form['email']
             session['email'] = email
-            #password=request.form['password']
-            #session['password']= password
-            connected = True
+
+            password=request.form['password']
+            session['password']= password
+
+            session.permanent = True
+
             return redirect(url_for('home'))
         else:
             return render_template("login.html", active=["login", session['connected']])
