@@ -25,19 +25,15 @@ def create_app():
 
     @app.route("/login", methods=['POST', 'GET'])
     def login():
-        if "email" in session:
-            email = session['email']
-            return f"<h1>{email}</h1>"
-        else :
-            if request.method == "POST":
-                email=request.form['email']
-                session['email'] = email
-                #password=request.form['password']
-                #session['password']= password
-                connected = True
-                return redirect(url_for('home'))
-            else:
-                return render_template("login.html", active=["login", session['connected']])
+        if request.method == "POST":
+            email=request.form['email']
+            session['email'] = email
+            #password=request.form['password']
+            #session['password']= password
+            connected = True
+            return redirect(url_for('home'))
+        else:
+            return render_template("login.html", active=["login", session['connected']])
     
     @app.route('/user')
     def user():
