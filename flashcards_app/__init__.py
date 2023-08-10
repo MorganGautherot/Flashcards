@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect, session
+from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 
@@ -28,7 +28,7 @@ def create_app():
     @app.route("/login", methods=['POST', 'GET'])
     def login():
         if request.method == "POST":
-            
+
             email=request.form['email']
             session['email'] = email
 
@@ -36,6 +36,8 @@ def create_app():
             session['password']= password
 
             session.permanent = True
+
+            flash('You have been logged in!', 'info')
 
             return redirect(url_for('home'))
         else:
@@ -54,6 +56,7 @@ def create_app():
         session.pop('email', None)
         session.pop('password', None)
         session['connected'] = False
-        return redirect(url_for("login"))
+        flash('You have been logged out!', 'info')
+        return redirect(url_for("home"))
 
     return app
