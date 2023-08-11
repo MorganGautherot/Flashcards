@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
+import numpy as np
+import json
 
 db = SQLAlchemy()
 
@@ -33,8 +35,28 @@ def create_app():
     
     @app.route('/flash_cards')
     def flash_cards():
-        return render_template('flash_cards.html', active=["flash_cards", session['connected']])
+        #print(models.question.query.count())
+        #print(models.question.query.with_entities(models.question.question).all())
+        #print(np.squeeze(models.question.query.with_entities(models.question.question).all()))
+        #print(json.dumps(np.squeeze(models.question.query.with_entities(models.question.question).all()).tolist()))
+        print(models.question.query.with_entities(models.question.answer).all())
+        return render_template('flash_cards.html', active=["flash_cards", 
+                                                           session['connected'], 
+                                                           np.squeeze(models.question.query.with_entities(models.question.question).all()).tolist(),
+                                                           np.squeeze(models.question.query.with_entities(models.question.answer).all()).tolist()])
     
+    @app.route('/create_cards', methods=['POST', 'GET'])
+    def create_cards():
+        if request.method == "POST":
+            flashcard = models.question(question=request.form['question'],
+                               answer=request.form['answer'])
+
+            db.session.add(flashcard)
+            db.session.commit()
+            flash('The card has been added  !', 'info')
+            return render_template("create_cards.html", active=["create_cards", session['connected']])
+        else :
+            return render_template("create_cards.html", active=["create_cards", session['connected']])
 
     @app.route('/create_account', methods=['POST', 'GET'])
     def create_account():
@@ -54,7 +76,7 @@ def create_app():
                                    last_lesson=request.form['last_lesson'])
 
                 db.session.add(usr)
-                db.session.flush()
+
                 db.session.commit()
 
                 flash('Your account has been created, please log on now !', 'info')
