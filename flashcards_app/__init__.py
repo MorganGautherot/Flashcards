@@ -35,10 +35,7 @@ def create_app():
     
     @app.route('/flash_cards')
     def flash_cards():
-        #print(models.question.query.count())
-        #print(models.question.query.with_entities(models.question.question).all())
-        #print(np.squeeze(models.question.query.with_entities(models.question.question).all()))
-        #print(json.dumps(np.squeeze(models.question.query.with_entities(models.question.question).all()).tolist()))
+
         print(models.question.query.with_entities(models.question.answer).all())
         return render_template('flash_cards.html', active=["flash_cards", 
                                                            session['connected'], 
