@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Create cards{% endblock %}
+{% block content %}
+<form action ="#" method="POST">
+    <input type='question' name="question" placeholder="Enter your question" value="Question"/>
+    <input type='answer' name="answer" placeholder="Enter your answer" value="Answer"/>
+    <input type="submit" value="submit"/>
+</form>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p>{{msg}}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% endblock %}

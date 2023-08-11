@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}User{% endblock %}
+{% block content %}
+<form action ="#" method="POST">
+    <input type='email' name="email" placeholder="Enter email" value="{{active[2] if active[2]}}"/>
+    <input type='last_lesson' name="last_lesson" placeholder="Enter your last lesson" value="{{active[3] if active[3]}}"/>
+    <input type="submit" value="submit"/>
+</form>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p>{{msg}}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% endblock %}

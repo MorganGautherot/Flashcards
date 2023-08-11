@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Flash cards{% endblock %}
+{% block content %}
+
+
+<style>
+    .title {
+    border: solid 5px black;
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    }
+    
+    .term {
+    border: solid 5px black;
+    border-radius: 15px;
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    width: 45%;
+    margin:auto;
+    margin-top: 100px;
+    }
+    
+    .definition {
+    border: solid 5px black;
+    border-radius: 15px;
+    text-align: center;
+    font-family: 'Lobster', cursive;
+    width: 45%;
+    margin:auto;
+    margin-top: 100px;
+    display: None;
+    }
+    
+    .button {
+    text-align: center;
+    border-radius: 15px;
+    margin:auto;
+    margin-top: 100px;
+    }
+    
+    button {
+    color: white;
+    border-radius: 10px;
+    background-color: rgb(49, 128, 49);
+    padding: 5px
+    }
+    
+    button:hover {
+    transform: scale(1.1);
+    }
+    
+    </style>
+    
+    <h1 class="title">Flashcards </h1>
+    
+    <div class="button">
+    <button class="next"> Question au hasard</button>
+    <button class="check"> Réponse</button>
+    </div>
+    
+    <div>
+    <h3 class="term">Term</h3>
+    </div>
+    
+    <div>
+    <h3 class="definition">Definition</h3>
+    </div>
+   
+    <script>
+        
+    const term = document.querySelector(".term");
+    const definition = document.querySelector(".definition")
+    const checkButton = document.querySelector(".check");
+    const nextButton = document.querySelector(".next");
+    
+
+    let question = "{{active[2]}}".replace('[', '').replace("]", "").replace("'", "").split(",");
+    let answer = "{{active[3]}}".replace('[', '').replace("]", "").replace("'", "").split(",");
+    var randomTerm = Math.floor(Math.random() * question.length)
+
+    
+    function getRandomTerm() {
+    randomTerm = Math.floor(Math.random() * question.length)
+    term.innerHTML = `<h3>${question[randomTerm]} </h3>`
+    }
+
+    checkButton.addEventListener("click", function() {
+    definition.style.display = "block";
+    definition.innerHTML = `<h3>${answer[randomTerm]}</h3>`
+    }
+    )
+
+    nextButton.addEventListener("click", function() {
+    definition.style.display = "None";
+    getRandomTerm()
+    }
+    )
+
+    </script>
+
+
+
+{% endblock %}
