@@ -37,7 +37,6 @@ def create_app():
     @app.route('/flash_cards')
     def flash_cards():
 
-        print(models.question.query.with_entities(models.question.answer).all())
         return render_template('flash_cards.html', active=["flash_cards", 
                                                            session['connected'], 
                                                            np.squeeze(models.question.query.with_entities(models.question.question).all()).tolist(),
@@ -66,7 +65,8 @@ def create_app():
         if 'admin' in session and session['admin']:
             if request.method == "POST":
                 flashcard = models.question(question=request.form['question'],
-                                answer=request.form['answer'])
+                                answer=request.form['answer'],
+                                lesson=request.form['lesson'])
 
                 db.session.add(flashcard)
                 db.session.commit()
@@ -137,14 +137,13 @@ def create_app():
             found_user = models.users.query.filter_by(email=session['email']).first()
 
             found_user.email = request.form['email']
-            found_user.last_email = request.form['last_lesson']
+            found_user.last_lesson = request.form['last_lesson']
 
             db.session.commit()
             flash("Changes confirm !", 'info')
 
             session['email'] = request.form['email']
             session['last_lesson'] = request.form['last_lesson']
-
             return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
 
 
@@ -152,7 +151,6 @@ def create_app():
             found_user = models.users.query.filter_by(email=session['email']).first()
             session['email'] = found_user.email
             session['last_lesson'] = found_user.last_lesson
-
             return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
         
     @app.route("/logout")

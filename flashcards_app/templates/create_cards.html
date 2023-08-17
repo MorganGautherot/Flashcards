@@ -4,6 +4,14 @@
 <form action ="#" method="POST">
     <input type='question' name="question" placeholder="Enter your question" value="Question"/>
     <input type='answer' name="answer" placeholder="Enter your answer" value="Answer"/>
+    <select name="lesson" id="lesson">
+        <option value=1>1 - linux/terminal</option>
+        <option value=2>2 - manipulation_data</option>
+        <option value=3>3 - git</option>
+        <option value=4>4 - python avancé</option>
+        <option value=5>5 - spark</option>
+        <option value=6>6 - introduction à airflow</option>
+    </select>
     <input type="submit" value="submit"/>
 </form>
 {% with messages = get_flashed_messages() %}
