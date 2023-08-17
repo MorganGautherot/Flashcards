@@ -1,0 +1,6 @@
+# ignore pyenv
+Lib
+Script
+
+# ignore cache 
+__pycache__
