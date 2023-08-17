@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
+import flashcards_app.secret_file as secret
 from datetime import timedelta
 import numpy as np
 import json
@@ -42,18 +43,40 @@ def create_app():
                                                            np.squeeze(models.question.query.with_entities(models.question.question).all()).tolist(),
                                                            np.squeeze(models.question.query.with_entities(models.question.answer).all()).tolist()])
     
+    @app.route('/admin', methods=['POST', 'GET'])
+    def admin():
+        if request.method == "POST":
+
+            if request.form['id']==secret.admin_id and request.form['password']==secret.admin_password :
+
+                flash('You have been logged in!', 'info')
+                session['admin'] = True
+
+                return redirect(url_for('create_cards'))
+            else :
+                flash("id or password incorect, please try again !", 'info')
+
+                return redirect(url_for('admin'))
+
+        else:
+            return render_template("admin.html", active=["admin", session['connected']])
+
     @app.route('/create_cards', methods=['POST', 'GET'])
     def create_cards():
-        if request.method == "POST":
-            flashcard = models.question(question=request.form['question'],
-                               answer=request.form['answer'])
+        if 'admin' in session and session['admin']:
+            if request.method == "POST":
+                flashcard = models.question(question=request.form['question'],
+                                answer=request.form['answer'])
 
-            db.session.add(flashcard)
-            db.session.commit()
-            flash('The card has been added  !', 'info')
-            return render_template("create_cards.html", active=["create_cards", session['connected']])
-        else :
-            return render_template("create_cards.html", active=["create_cards", session['connected']])
+                db.session.add(flashcard)
+                db.session.commit()
+                flash('The card has been added  !', 'info')
+                return render_template("create_cards.html", active=["create_cards", session['connected']])
+            else :
+                return render_template("create_cards.html", active=["create_cards", session['connected']])
+        else : 
+            flash("Please loging first !", 'info')
+            return redirect(url_for('admin'))
 
     @app.route('/create_account', methods=['POST', 'GET'])
     def create_account():
