@@ -1,3 +1,5 @@
 Flask==2.3.2
 Flask-SQLAlchemy==3.0.5
 numpy==1.25.2
+# app deployment
+gunicorn

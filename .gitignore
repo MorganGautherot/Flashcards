@@ -5,5 +5,3 @@ Scripts
 # ignore cache 
 __pycache__
 
-# app deployment
-gunicorn
