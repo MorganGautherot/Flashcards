@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
-import flashcards_app.secret_file as secret
+import etc.secret.secret_file as secret
 from flashcards_app.raw_data import fill_db
 from datetime import timedelta, datetime
 import numpy as np
