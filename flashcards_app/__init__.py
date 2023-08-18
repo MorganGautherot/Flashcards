@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import timedelta
+import flashcards_app.secret_file as secret
+from flashcards_app.raw_data import fill_db
+from datetime import timedelta, datetime
 import numpy as np
 import json
 
@@ -22,6 +24,9 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+        # If the question database is empty fill it with questions and answers
+        if models.question.query.count()==0:
+            fill_db(db, models)
 
     @app.route('/')
     def home():
@@ -33,27 +38,109 @@ def create_app():
 
         return render_template('index.html', active=["homepage", session['connected']])
     
-    @app.route('/flash_cards')
+    @app.route('/flash_cards', methods=['POST', 'GET'])
     def flash_cards():
+        if request.method == "POST":
+            # retrieves information from the buttons
+            action, id_action = request.form['submit'].split('-')
 
-        print(models.question.query.with_entities(models.question.answer).all())
-        return render_template('flash_cards.html', active=["flash_cards", 
-                                                           session['connected'], 
-                                                           np.squeeze(models.question.query.with_entities(models.question.question).all()).tolist(),
-                                                           np.squeeze(models.question.query.with_entities(models.question.answer).all()).tolist()])
+            # extracts only the number
+            id_action = id_action.replace('{', '').replace('}', '').replace(' ', '')
+
+            # Find the user's question in the database
+            found_learning = models.learning.query.filter_by(user_id=session['user_id']).filter_by(question_id=id_action).first()
+
+            # Update the next time the user will see the flashcard
+            if action == 'hour':
+                # User sees the flashcard again in one hour
+                found_learning.next_show = datetime.now()+ timedelta(hours=1)
+            elif action == "day":
+                # User sees the flashcard again in one day
+                found_learning.next_show = datetime.now()+ timedelta(days=1)
+            elif action == "week":
+                # User sees the flashcard again in one week
+                found_learning.next_show = datetime.now()+ timedelta(days=7)
+            elif action == "delete":
+                # User never sees the flashcard again
+                found_learning.next_show = datetime.now()+timedelta(days=36500)
+
+            # update the database with the changes
+            db.session.commit()
+
+            # inform the user that the changes are effective
+            flash("Changes confirm !", 'info')
+
+            # retrieve the question id from database 
+            id_question = models.learning.query.filter_by(user_id=session['user_id']).filter(models.learning.next_show<datetime.now()).with_entities(models.learning.question_id).all()
+            
+            # get id_question in list shape
+            id_question_flatten = list(map(lambda x : int(np.squeeze(x)), id_question))
+
+            # retrieve questions from id_question
+            list_question = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).with_entities(models.question.question).all()).tolist()
+            
+            # retrieve answers from id_question
+            list_answer = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).with_entities(models.question.answer).all()).tolist()
+            
+            return render_template('flash_cards.html', active=["flash_cards", 
+                                                            session['connected'], 
+                                                            list_question,
+                                                            list_answer, 
+                                                            id_question_flatten])
+        else :
+            # retrieve the question id from database 
+            id_question = models.learning.query.filter_by(user_id=session['user_id']).filter(models.learning.next_show<datetime.now()).with_entities(models.learning.question_id).all()
+            
+            # get id_question in list shape
+            id_question_flatten = list(map(lambda x : int(np.squeeze(x)), id_question))
+
+            # retrieve questions from id_question
+            list_question = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).with_entities(models.question.question).all()).tolist()
+            
+            # retrieve answers from id_question
+            list_answer = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).with_entities(models.question.answer).all()).tolist()
+
+            return render_template('flash_cards.html', active=["flash_cards", 
+                                                            session['connected'], 
+                                                            list_question,
+                                                            list_answer, 
+                                                            id_question_flatten])
     
+    @app.route('/admin', methods=['POST', 'GET'])
+    def admin():
+        if request.method == "POST":
+
+            if request.form['id']==secret.admin_id and request.form['password']==secret.admin_password :
+
+                flash('You have been logged in!', 'info')
+                session['admin'] = True
+
+                return redirect(url_for('create_cards'))
+            else :
+                flash("id or password incorect, please try again !", 'info')
+
+                return redirect(url_for('admin'))
+
+        else:
+            return render_template("admin.html", active=["admin", session['connected']])
+
     @app.route('/create_cards', methods=['POST', 'GET'])
     def create_cards():
-        if request.method == "POST":
-            flashcard = models.question(question=request.form['question'],
-                               answer=request.form['answer'])
+        if 'admin' in session and session['admin']:
+            if request.method == "POST":
+                flashcard = models.question(question=request.form['question'],
+                                            answer=request.form['answer'],
+                                            lesson=request.form['lesson'])
 
-            db.session.add(flashcard)
-            db.session.commit()
-            flash('The card has been added  !', 'info')
-            return render_template("create_cards.html", active=["create_cards", session['connected']])
-        else :
-            return render_template("create_cards.html", active=["create_cards", session['connected']])
+                db.session.add(flashcard)
+                db.session.commit()
+                flash('The card has been added  !', 'info')
+                return render_template("create_cards.html", active=["create_cards", session['connected']])
+            else :
+                return render_template("create_cards.html", active=["create_cards", session['connected']])
+        else : 
+            flash("Please loging first !", 'info')
+            return redirect(url_for('admin'))
 
     @app.route('/create_account', methods=['POST', 'GET'])
     def create_account():
@@ -69,11 +156,24 @@ def create_app():
                 return redirect(url_for('create_account'))
             
             else :
+
+                # add new user
                 usr = models.users(email=request.form['email'],
                                    last_lesson=request.form['last_lesson'])
-
                 db.session.add(usr)
+                db.session.commit()
 
+                # Search for the id of the new user
+                found_user = models.users.query.filter_by(email=request.form['email']).first()
+
+                # Search for the id of the question in db
+                found_question = models.question.query.with_entities(models.question._id).all()
+
+                # Fill the table learning for the user_id with the id of every question in the db
+                for quest in found_question:
+                    user_question = models.learning(user_id=int(np.squeeze(found_user._id)),
+                                                    question_id=int(np.squeeze(quest)))
+                    db.session.add(user_question)
                 db.session.commit()
 
                 flash('Your account has been created, please log on now !', 'info')
@@ -92,6 +192,7 @@ def create_app():
             if found_user:
                 session['email'] = request.form['email']
                 session['last_lesson'] = found_user.last_lesson
+                session['user_id'] = found_user._id
 
                 session.permanent = True
 
@@ -114,14 +215,13 @@ def create_app():
             found_user = models.users.query.filter_by(email=session['email']).first()
 
             found_user.email = request.form['email']
-            found_user.last_email = request.form['last_lesson']
+            found_user.last_lesson = request.form['last_lesson']
 
             db.session.commit()
             flash("Changes confirm !", 'info')
 
             session['email'] = request.form['email']
             session['last_lesson'] = request.form['last_lesson']
-
             return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
 
 
@@ -129,7 +229,6 @@ def create_app():
             found_user = models.users.query.filter_by(email=session['email']).first()
             session['email'] = found_user.email
             session['last_lesson'] = found_user.last_lesson
-
             return render_template('user.html', active=["user", session['connected'], session['email'], session['last_lesson']])
         
     @app.route("/logout")

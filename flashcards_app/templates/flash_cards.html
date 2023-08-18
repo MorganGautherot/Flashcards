@@ -35,7 +35,7 @@
     text-align: center;
     border-radius: 15px;
     margin:auto;
-    margin-top: 100px;
+    margin-top: 50px;
     }
     
     button {
@@ -54,21 +54,28 @@
     <h1 class="title">Flashcards </h1>
     
     <div class="button">
-    <button class="next"> Question au hasard</button>
-    <button class="check"> Réponse</button>
+        <button class="next"> Question au hasard</button>
+        <button class="check"> Réponse</button>
     </div>
     
     <div>
-    <h3 class="term">Term</h3>
+        <h3 class="term">Term</h3>
+    </div>
+
+    <div class="button">
+        <form action ="#" method="POST" class="form">
+        </form>
+
     </div>
     
     <div>
-    <h3 class="definition">Definition</h3>
+        <h3 class="definition">Definition</h3>
     </div>
    
     <script>
         
     const term = document.querySelector(".term");
+    const form = document.querySelector(".form");
     const definition = document.querySelector(".definition")
     const checkButton = document.querySelector(".check");
     const nextButton = document.querySelector(".next");
@@ -76,12 +83,17 @@
 
     let question = "{{active[2]}}".replace('[', '').replace("]", "").replace("'", "").split(",");
     let answer = "{{active[3]}}".replace('[', '').replace("]", "").replace("'", "").split(",");
+    let list_id = "{{active[4]}}".replace('[', '').replace("]", "").replace("'", "").split(",");
     var randomTerm = Math.floor(Math.random() * question.length)
 
     
     function getRandomTerm() {
-    randomTerm = Math.floor(Math.random() * question.length)
-    term.innerHTML = `<h3>${question[randomTerm]} </h3>`
+    randomTerm = Math.floor(Math.random() * question.length);
+    term.innerHTML = `<h3>${question[randomTerm]} </h3>`;
+    form.innerHTML = `<button type='submit' name='submit' value='hour-${list_id[randomTerm]}'> hour </button> \
+                      <button type='submit' name='submit' value='day-${list_id[randomTerm]}'> day </button> \
+                      <button type='submit' name='submit' value='week-${list_id[randomTerm]}'> week </button> \
+                      <button type='submit' name='submit' value='delete-${list_id[randomTerm]}}'> delete </button>`
     }
 
     checkButton.addEventListener("click", function() {
@@ -92,12 +104,18 @@
 
     nextButton.addEventListener("click", function() {
     definition.style.display = "None";
-    getRandomTerm()
+    getRandomTerm();
     }
     )
 
     </script>
 
 
-
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p>{{msg}}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 {% endblock %}

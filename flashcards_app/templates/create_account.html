@@ -3,7 +3,14 @@
 {% block content %}
 <form action="#" method="POST">
     <input type="email" name="email" placeholder="Enter Email" />
-    <input type="last_lesson" name="last_lesson" placeholder="Enter last lesson" />
+    <select name="last_lesson" id="last_lesson">
+        <option value=1>1 - linux/terminal</option>
+        <option value=2>2 - manipulation_data</option>
+        <option value=3>3 - git</option>
+        <option value=4>4 - python avancé</option>
+        <option value=5>5 - spark</option>
+        <option value=6>6 - introduction à airflow</option>
+    </select>
     <input type="submit" value="submit"/>
 </form>
 

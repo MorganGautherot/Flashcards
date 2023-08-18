@@ -1,7 +1,9 @@
-# ignore pyenv
+# ignore venv
 Lib
 Scripts
 
 # ignore cache 
 __pycache__
 
+# ignore secret
+secret_file.py
