@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, url_for, redirect, session, f
 from flask_sqlalchemy import SQLAlchemy
 import sys
 sys.path.insert(0, '/etc/secrets/')
-#import etc.secrets.secret_file as secret
+import secret_file as secret
 from flashcards_app.raw_data import fill_db
 from datetime import timedelta, datetime
 import numpy as np
