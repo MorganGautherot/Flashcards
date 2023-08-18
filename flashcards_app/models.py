@@ -16,6 +16,7 @@ class question(db.Model):
     _id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     date_created = db.Column("date_created", db.DateTime, default=datetime.now())
     question = db.Column('question', db.String(500))
+    lesson = db.Column("lesson", db.Integer)
     answer = db.Column('answer', db.String(500))
 
     def __init__(self, question, answer, lesson):

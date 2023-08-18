@@ -77,11 +77,11 @@ def create_app():
             id_question_flatten = list(map(lambda x : int(np.squeeze(x)), id_question))
 
             # retrieve questions from id_question
-            list_question = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).with_entities(models.question.question).all()).tolist()
+            list_question = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).filter(models.question.lesson<=session['last_lesson']).with_entities(models.question.question).all()).tolist()
             
             # retrieve answers from id_question
-            list_answer = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).with_entities(models.question.answer).all()).tolist()
-            
+            list_answer = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).filter(models.question.lesson<=session['last_lesson']).with_entities(models.question.answer).all()).tolist()
+           
             return render_template('flash_cards.html', active=["flash_cards", 
                                                             session['connected'], 
                                                             list_question,
@@ -95,10 +95,10 @@ def create_app():
             id_question_flatten = list(map(lambda x : int(np.squeeze(x)), id_question))
 
             # retrieve questions from id_question
-            list_question = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).with_entities(models.question.question).all()).tolist()
+            list_question = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).filter(models.question.lesson<=session['last_lesson']).with_entities(models.question.question).all()).tolist()
             
             # retrieve answers from id_question
-            list_answer = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).with_entities(models.question.answer).all()).tolist()
+            list_answer = np.squeeze(models.question.query.filter(models.question._id.in_(id_question_flatten)).filter(models.question.lesson<=session['last_lesson']).with_entities(models.question.answer).all()).tolist()
 
             return render_template('flash_cards.html', active=["flash_cards", 
                                                             session['connected'], 
