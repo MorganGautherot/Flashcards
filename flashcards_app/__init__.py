@@ -5,13 +5,15 @@ from flashcards_app.raw_data import fill_db
 from datetime import timedelta, datetime
 import numpy as np
 import os
+import sys
 import json
 
 db = SQLAlchemy()
 
 def create_app():
 
-
+    sys.path.insert(0, '/etc/secrets/')
+    print(os.path.exists('secret_file.py'))
     print(os.listdir('/etc/secrets/'))
     print(os.listdir('.'))
     print(os.listdir('/'))
