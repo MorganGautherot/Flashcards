@@ -4,12 +4,15 @@ import etc.secrets.secret_file as secret
 from flashcards_app.raw_data import fill_db
 from datetime import timedelta, datetime
 import numpy as np
+import os
 import json
 
 db = SQLAlchemy()
 
 def create_app():
 
+    print(os.path.exists('etc/secrets/secret_file.py'))
+    print(os.listdir('etc/secrets'))
     app = Flask(__name__)
     app.secret_key = 'secret-key'
     app.permanent_session_lifetime= timedelta(days=1)
