@@ -11,8 +11,10 @@ db = SQLAlchemy()
 
 def create_app():
 
-    print(os.path.exists('etc/secrets/secret_file.py'))
+
     print(os.listdir('/etc/secrets/'))
+    print(os.listdir('.'))
+    print(os.listdir('/'))
     app = Flask(__name__)
     app.secret_key = 'secret-key'
     app.permanent_session_lifetime= timedelta(days=1)
